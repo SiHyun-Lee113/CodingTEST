@@ -42,5 +42,5 @@ public class correct_parentheses {
             }
         }
         return stack.isEmpty();
-    }
+    }//d
 }

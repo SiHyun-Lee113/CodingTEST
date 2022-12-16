@@ -47,7 +47,7 @@ public class GCD_LCM {
                     b = r1;
                 }
             }
-        }
+        }//d
         answer[1] = n*m / answer[0];
 
         return answer;

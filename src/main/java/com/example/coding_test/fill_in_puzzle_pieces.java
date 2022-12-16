@@ -197,7 +197,7 @@ public class fill_in_puzzle_pieces {
                 game_board[i][j] = Integer.parseInt(stk.nextToken());
             }
         }
-
+//d
         for(int i = 0; i < 3; i++) {
             stk = new StringTokenizer(br.readLine(), " ");
             for(int j = 0; j < 3; j++) {
