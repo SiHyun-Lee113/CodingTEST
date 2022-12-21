@@ -69,6 +69,7 @@ public class friend4block {
                     q.add(input[j][i]);
                 }
             }
+
             int idx=m-1;
             // 삭제한 블록 위의 블록들 내리기
             while(!q.isEmpty()){
