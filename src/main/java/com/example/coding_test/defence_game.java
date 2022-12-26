@@ -19,6 +19,9 @@ public class defence_game {
             if (defense.isEmpty() || defense.size() < k) {
                 defense.add(enemy[i]);
             }
+
+
+
             else {
                 if (defense.peek() < enemy[i] && n - defense.peek() >= 0) {
                     n -= defense.poll();
