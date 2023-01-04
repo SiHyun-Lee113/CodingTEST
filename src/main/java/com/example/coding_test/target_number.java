@@ -7,16 +7,15 @@ public class target_number {
         int[] numbers = {1, 1, 1, 1, 1};
         int target = 3;
         int answer = dfs(numbers, 0, 0, target);
-        System.out.println(answer);
-//        System.out.println(solution(numbers, target));
+//        System.out.println(answer);
+        System.out.println(solution(numbers, target));
     }
 
     public static int dfs(int[] numbers, int n, int sum, int target) {
         if(n == numbers.length)
             return sum == target ? 1 : 0;
 
-        return dfs(numbers, n+1, sum + numbers[n], target) +
-                dfs(numbers, n+1, sum - numbers[n], target);
+        return dfs(numbers, n+1, sum + numbers[n], target) + dfs(numbers, n+1, sum - numbers[n], target);
     }
 
     private static int solution(int[] numbers, int target) {
