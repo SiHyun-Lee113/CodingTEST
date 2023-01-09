@@ -4,18 +4,18 @@ import java.util.*;
 
 public class delivery_and_collection {
     public static void main(String[] args) throws InterruptedException {
-        int cap = 4;
-        int n = 5;
-        int[] deliveries = {1, 0, 3, 1, 2};
-        int[] pickups = {0, 3, 0, 4, 0};
-//        int cap = 17;
-//        int n = 100000;
-//        int[] deliveries = new int[100000];
-//        int[] pickups = new int[100000];
-//        for(int i = 0; i < deliveries.length; i++) {
-//            deliveries[i] = 50;
-//            pickups[i] = 50;
-//        }
+//        int cap = 4;
+//        int n = 6;
+//        int[] deliveries = {1, 0, 3, 1, 2, 0};
+//        int[] pickups = {0, 3, 0, 4, 0, 8};
+        int cap = 50;
+        int n = 100000;
+        int[] deliveries = new int[100000];
+        int[] pickups = new int[100000];
+        for(int i = 0; i < deliveries.length; i++) {
+            deliveries[i] = 50;
+            pickups[i] = 50;
+        }
 //        int cap = 2;
 //        int n = 1;
 //        int[] deliveries = {0};
@@ -33,136 +33,87 @@ public class delivery_and_collection {
         System.out.println(solution(cap, n, deliveries, pickups));
     }
 
-    public static int solution(int cap, int n, int[] deliveries, int[] pickups) throws InterruptedException {
-        int answer = 0;
+    public static long solution(int cap, int n, int[] deliveries, int[] pickups) {
+        long answer = 0;
 
-        List<Delivery> deliveryList = new ArrayList<>();
-        boolean[] delivery_check = new boolean[deliveries.length];
-        boolean[] pickup_check = new boolean[pickups.length];
+        long beforeTime = System.currentTimeMillis();
 
-        for(int i = 0; i < n; i++) {
-            boolean remaining_receive = deliveries[i] > 0;
-            boolean remaining_send = pickups[i] > 0;
-
-            delivery_check[i] = remaining_receive;
-            pickup_check[i] = remaining_send;
-
-            Delivery delivery = new Delivery(deliveries[i], pickups[i]);
-            deliveryList.add(delivery);
+        Stack<Integer> stack_delivery = new Stack<>();
+        Stack<Integer> stack_pickup = new Stack<>();
+        for(int i = 0; i < deliveries.length; i++) {
+            if (deliveries[i] > 0)
+                stack_delivery.add(i+1);
+            if (pickups[i] > 0)
+                stack_pickup.add(i+1);
         }
 
-        int delivery_cap = 0;
-        int destination = 0;
-        while(!deliveryList.isEmpty()) {
-
-            destination = Math.max(max_length(delivery_check), max_length(pickup_check));
+        while(!stack_delivery.isEmpty() && !stack_pickup.isEmpty()) {
+            int destination = Math.max(stack_delivery.peek(), stack_pickup.peek());
             if (destination == 0)
                 break;
 
-            delivery_cap = cap;
-            for(int i = destination - 1; i >= 0; i--) {
-
-                if (delivery_cap == 0) {
+            int delivery_cap = cap;
+            while (!stack_delivery.isEmpty()) {
+                if (delivery_cap == 0)
                     break;
-                }
-                if (!delivery_check[i])
-                    continue;
-                int count = deliveryList.get(i).receive - delivery_cap;
+                int count = deliveries[stack_delivery.peek()-1] - delivery_cap;
                 if (count > 0) {
-                    deliveryList.get(i).receive = count;
+                    deliveries[stack_delivery.peek()-1] = count;
                     delivery_cap = 0;
                 } else {
-                    deliveryList.get(i).receive = 0;
-                    delivery_check[i] = false;
+                    deliveries[stack_delivery.peek()-1] = 0;
                     delivery_cap = Math.abs(count);
-
+                    stack_delivery.pop();
                 }
             }
 
             int pickup_cap = cap;
-            for(int i = destination - 1; i >= 0; i--) {
-
-                if (pickup_cap == 0) {
+            while (!stack_pickup.isEmpty()) {
+                if (pickup_cap == 0)
                     break;
-                }
-                if (!pickup_check[i])
-                    continue;
-                int count = deliveryList.get(i).send - pickup_cap;
+                int count = pickups[stack_pickup.peek()-1] - pickup_cap;
                 if (count > 0) {
-                    deliveryList.get(i).send = count;
+                    pickups[stack_pickup.peek()-1] = count;
                     pickup_cap = 0;
                 } else {
-                    deliveryList.get(i).send = 0;
-                    pickup_check[i] = false;
+                    pickups[stack_pickup.peek()-1] = 0;
                     pickup_cap = Math.abs(count);
+                    stack_pickup.pop();
                 }
             }
-//            for(int i = destination - 1; i >= 0; i--) {
-//                if (pickup_cap >= cap) {
-//                    break;
-//                }
-//                if (!pickup_check[i])
-//                    continue;
-//
-//                int send = deliveryList.get(i).send;
-//                pickup_cap += send;
-//                if (pickup_cap > cap) {
-//                    int abs = pickup_cap - cap;
-//                    pickup_cap = cap;
-//                    deliveryList.get(i).send = abs;
-//                    if (deliveryList.get(i).send == 0)
-//                        pickup_check[i] = false;
-//                } else {
-//                    deliveryList.get(i).send -= send;
-//                    if (deliveryList.get(i).send == 0)
-//                        pickup_check[i] = false;
-//                }
-//            }
-            for(int i = destination-1; i >= 0; i--) {
-                if (!delivery_check[i] && !pickup_check[i]) {
-                    deliveryList.remove(i);
-                }
-                else {
+
+            answer += destination * 2L;
+
+        }
+        answer = getAnswer(cap, deliveries, answer, stack_delivery);
+        answer = getAnswer(cap, pickups, answer, stack_pickup);
+
+
+        long afterTime = System.currentTimeMillis();
+        long time = (afterTime - beforeTime);
+        System.out.println("time = " + time);
+        return answer;
+    }
+
+    private static long getAnswer(int cap, int[] deliveries, long answer, Stack<Integer> stack_delivery) {
+        while (!stack_delivery.isEmpty()) {
+            int destination = stack_delivery.peek();
+            int delivery_cap = cap;
+            while (!stack_delivery.isEmpty()) {
+                if (delivery_cap == 0)
                     break;
+                int count = deliveries[stack_delivery.peek()-1] - delivery_cap;
+                if (count > 0) {
+                    deliveries[stack_delivery.peek()-1] = count;
+                    delivery_cap = 0;
+                } else {
+                    deliveries[stack_delivery.peek()-1] = 0;
+                    delivery_cap = Math.abs(count);
+                    stack_delivery.pop();
                 }
             }
-
-            answer += destination * 2;
-
+            answer += destination * 2L;
         }
         return answer;
     }
-    public static int max_length(boolean[] remaining) {
-        int length = 0;
-
-        for(int i = remaining.length -1; i >= 0; i--) {
-            if (remaining[i])
-                return i+1;
-        }
-
-        return length;
-    }
-
-    static class Delivery {
-        int receive;
-        int send;
-
-        public Delivery(int receive, int send) {
-            this.receive = receive;
-            this.send = send;
-        }
-
-        @Override
-        public String toString() {
-            return "Delivery{" +
-                    "receive=" + receive +
-                    ", send=" + send +
-                    '}';
-        }
-    }
 }
-
-// System.out.println(Arrays.toString(delivery_check));
-//            System.out.println(Arrays.toString(pickup_check));
-//            System.out.println(destination);
-//            System.out.println("------------------------------");
