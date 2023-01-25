@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
+// 문제 url : https://www.acmicpc.net/problem/1388
 public class FloorDecoration {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -35,6 +36,7 @@ public class FloorDecoration {
                 if (!visited[i][j]) {
                     //'-'이면 bfs로(가로) 같은 모양인 타일이 있는지 검사
                     if (floorDecoration[i][j].equals("-")) {
+                        // 같은 방향의 타일이 있다면 1개 이므로 검사
                         answer += bfs(floorDecoration, i, j, y) > 0 ? 1 : 0;
                     }
                     //'|'이면 dfs로(세로) 같은 모양인 타일이 있는지 검사
