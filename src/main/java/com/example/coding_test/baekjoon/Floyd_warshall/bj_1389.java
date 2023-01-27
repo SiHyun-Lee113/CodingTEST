@@ -1,4 +1,4 @@
-package com.example.coding_test.baekjoon.BFS.Silver;
+package com.example.coding_test.baekjoon.Floyd_warshall;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,9 +54,6 @@ public class bj_1389 {
             }
         }
 
-//        for (int[] ints : board) {
-//            System.out.println(Arrays.toString(ints));
-//        }
         System.out.println(min_index);
     }
 }
